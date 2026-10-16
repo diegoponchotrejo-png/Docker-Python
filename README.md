@@ -60,32 +60,40 @@ Puedes revisar y ajustar los valores en `.env` si lo necesitas.
 python3 app.py
 ```
 
-Abre [http://localhost:5000](http://localhost:5000). Verás "No hay alumnos
+Abre [http://localhost:5001](http://localhost:5001). Verás "No hay alumnos
 registrados." porque todavía no hay ninguna base de datos disponible — y no
 un error 500, que es justo el comportamiento esperado en este punto.
 
-## 2. Con Docker (base de datos incluida)
+## 2. Ejecutar con Docker
 
-Una vez entendido el paso anterior, se levanta todo el stack (app + PostgreSQL)
-con Docker Compose:
+Primero abre Docker Desktop y espera a que termine de iniciar.
 
-```bash
-docker compose up --build
-```
-
-Esto crea el contenedor de PostgreSQL, carga los datos iniciales de
-[`database_students.sql`](database_students.sql) y arranca la app conectada a
-esa base de datos. Fíjate que en `docker-compose.yml` las mismas variables
-(`DB_HOST`, `DB_USER`, etc.) se definen directamente ahí en vez de en un
-`.env` — es Docker Compose quien se las entrega al contenedor. Ahora en
-[http://localhost:5000](http://localhost:5000) sí se verá el listado de
-alumnos.
-
-Para detener y eliminar los contenedores:
+### Crear la imagen
 
 ```bash
-docker compose down
+docker build -t docker-python .
 ```
+
+### Iniciar el contenedor
+
+```bash
+docker run --rm -p 5001:5001 docker-python
+```
+
+Abre [http://127.0.0.1:5001](http://127.0.0.1:5001) en el navegador.
+Deja la terminal abierta mientras usas la aplicación. Para detenerla,
+presiona Ctrl + C.
+
+En `-p 5001:5001`, el primer puerto es el de tu computadora y el segundo
+es el de la aplicación dentro del contenedor.
+
+Este comando inicia solamente la aplicación, no PostgreSQL. Sin una base
+de datos disponible, la lista de alumnos se muestra vacía.
+El archivo `database_students.sql` contiene los datos de ejemplo para
+cargarlos cuando se configure PostgreSQL.
+
+El archivo `.dockerignore` evita copiar el entorno virtual, el historial
+de Git y el archivo `.env` dentro de la imagen.
 
 ## Estructura del proyecto
 
